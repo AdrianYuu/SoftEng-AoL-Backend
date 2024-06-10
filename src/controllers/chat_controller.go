@@ -182,14 +182,18 @@ func triggerSubscription(conversationId string, message *model.Message) {
 
 	subscribers, found := subscriptions[conversationId]
 	if found {
+		var activeSubscribers []*model.MessageSubscription
 		for _, subscriber := range subscribers {
 			select {
 			case <-subscriber.DoneChannel:
-				subscriber = nil
+				// Remove inactive subscriber
+				continue
 			case subscriber.MessageChannel <- message:
-				// Message went through, do nothing
+				// Message sent successfully
+				activeSubscribers = append(activeSubscribers, subscriber)
 			}
 		}
+		subscriptions[conversationId] = activeSubscribers
 	}
 }
 

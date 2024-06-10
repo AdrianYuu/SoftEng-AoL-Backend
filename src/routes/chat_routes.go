@@ -5,12 +5,21 @@ import (
 	"github.com/badaccuracyid/softeng_backend/src/database"
 	"github.com/badaccuracyid/softeng_backend/src/model"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"net/http"
 )
 
 type ChatRoutes struct {
 	baseRouter     *gin.RouterGroup
 	chatController controllers.ChatController
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func NewChatRoutes(router *gin.Engine) (*ChatRoutes, error) {
@@ -42,6 +51,7 @@ func (c *ChatRoutes) registerRoutes() {
 	c.baseRouter.POST("/create", c.createConversation)
 	c.baseRouter.POST("/message", c.sendMessage)
 	c.baseRouter.GET("/get/:id", c.getConversation)
+	c.baseRouter.GET("/ws/:id", c.handleWebSocket)
 }
 
 // createConversation handles the POST /api/v1/chats/create request
@@ -129,4 +139,64 @@ func (c *ChatRoutes) getConversation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, conversation)
+}
+
+// handleWebSocket handles the GET /api/v1/chats/ws/:id request
+// @Summary Handle a websocket connection
+// @Description Handle a websocket connection
+// @Tags chats
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Chat ID"
+// @Success 200 {string} string
+// @Failure 400 {string} string
+// @Failure 404 {string} string
+// @Failure 500 {string} string
+// @Router /api/v1/chats/ws/{id} [get]
+func (c *ChatRoutes) handleWebSocket(ctx *gin.Context) {
+	conversationID := ctx.Param("id")
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, "Failed to set websocket upgrade")
+		return
+	}
+
+	messageChannel, doneChannel, err := c.chatController.NewMessageSubscription(conversationID)
+	if err != nil {
+		err := conn.Close()
+		if err != nil {
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, "Failed to subscribe to messages")
+		return
+	}
+
+	defer close(doneChannel)
+
+	go func() {
+		for {
+			message, ok := <-messageChannel
+			if !ok {
+				err := conn.Close()
+				if err != nil {
+					return
+				}
+				return
+			}
+			err := conn.WriteJSON(message)
+			if err != nil {
+				return
+			}
+		}
+	}()
+
+	for {
+		_, _, err := conn.ReadMessage()
+		if err != nil {
+			doneChannel <- struct{}{}
+			conn.Close()
+			return
+		}
+	}
+
 }
