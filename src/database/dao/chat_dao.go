@@ -35,3 +35,8 @@ func (dao *ChatDAO) UpdateConversation(conversation *model.Conversation) error {
 func (dao *ChatDAO) DeleteConversation(id string) error {
 	return dao.DB.Delete(&model.Conversation{}, id).Error
 }
+
+func (dao *ChatDAO) CreateMessage(message *model.Message) error {
+	return dao.DB.Create(message).Error
+
+}

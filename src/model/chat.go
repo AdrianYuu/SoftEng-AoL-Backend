@@ -17,6 +17,11 @@ type Message struct {
 	ContentType    MessageContentType `json:"contentType" gorm:"not null"`
 }
 
+type MessageSubscription struct {
+	MessageChannel chan *Message
+	DoneChannel    chan struct{}
+}
+
 type CreateConversationInput struct {
 	Title     string   `json:"title"`
 	MemberIds []string `json:"memberIds"`

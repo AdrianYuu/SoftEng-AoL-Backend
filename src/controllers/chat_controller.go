@@ -7,6 +7,7 @@ import (
 	"github.com/badaccuracyid/softeng_backend/src/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"sync"
 )
 
 type ChatController interface {
@@ -79,19 +80,110 @@ func (s *chatController) DeleteConversation(id string) error {
 }
 
 func (s *chatController) SendMessage(input model.SendMessageInput) (*model.Message, error) {
-	return nil, nil
+	message := &model.Message{
+		ID:             uuid.New().String(),
+		ConversationID: input.ConversationID,
+		SenderID:       input.SenderID,
+		ContentType:    input.ContentType,
+		Content:        input.Content,
+	}
+
+	if err := s.chatDAO.CreateMessage(message); err != nil {
+		return nil, err
+	}
+
+	triggerSubscription(input.ConversationID, message)
+	return message, nil
 }
 
 func (s *chatController) AddUserToConversation(conversationID string, userID string) (*model.Conversation, error) {
-	return nil, nil
+	userService := NewUserService(s.chatDAO.DB)
+	userService.SetContext(s.ctx)
+
+	user, err := userService.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	conversation, err := s.GetConversation(conversationID)
+	if err != nil {
+		return nil, err
+	}
+
+	if membersContainsUser(conversation.Members, user) {
+		return conversation, nil
+	}
+
+	conversation.Members = append(conversation.Members, user)
+
+	if err := s.chatDAO.DB.Association("Members").Append(user); err != nil {
+		return nil, err
+	}
+
+	return conversation, nil
 }
 
 func (s *chatController) RemoveUserFromConversation(conversationID string, userID string) (*model.Conversation, error) {
-	return nil, nil
+	userService := NewUserService(s.chatDAO.DB)
+	userService.SetContext(s.ctx)
+
+	user, err := userService.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	conversation, err := s.GetConversation(conversationID)
+	if err != nil {
+		return nil, err
+	}
+
+	if !membersContainsUser(conversation.Members, user) {
+		return conversation, nil
+	}
+
+	if err := s.chatDAO.DB.Association("Members").Delete(user); err != nil {
+		return nil, err
+	}
+
+	return conversation, nil
 }
 
+var (
+	subscriptions      = make(map[string][]*model.MessageSubscription)
+	subscriptionsMutex sync.Mutex
+)
+
 func (s *chatController) NewMessageSubscription(conversationID string) (<-chan *model.Message, chan<- struct{}, error) {
-	return nil, nil, nil
+	subscription := &model.MessageSubscription{
+		MessageChannel: make(chan *model.Message),
+		DoneChannel:    make(chan struct{}),
+	}
+
+	onSubscribe(conversationID, subscription)
+	return subscription.MessageChannel, subscription.DoneChannel, nil
+}
+
+func onSubscribe(conversationId string, subscription *model.MessageSubscription) {
+	subscriptionsMutex.Lock()
+	defer subscriptionsMutex.Unlock()
+	subscriptions[conversationId] = append(subscriptions[conversationId], subscription)
+}
+
+func triggerSubscription(conversationId string, message *model.Message) {
+	subscriptionsMutex.Lock()
+	defer subscriptionsMutex.Unlock()
+
+	subscribers, found := subscriptions[conversationId]
+	if found {
+		for _, subscriber := range subscribers {
+			select {
+			case <-subscriber.DoneChannel:
+				subscriber = nil
+			case subscriber.MessageChannel <- message:
+				// Message went through, do nothing
+			}
+		}
+	}
 }
 
 func membersContainsUser(members []*model.User, user *model.User) bool {
