@@ -7,10 +7,13 @@ import (
 	"github.com/badaccuracyid/softeng_backend/src/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"sync"
 )
 
 type ChatController interface {
+	SetContext(ctx *gin.Context)
+
 	CreateConversation(input model.CreateConversationInput) (*model.Conversation, error)
 	GetConversation(id string) (*model.Conversation, error)
 	DeleteConversation(id string) error
@@ -28,10 +31,14 @@ type chatController struct {
 	chatDAO *dao.ChatDAO
 }
 
-func NewChatController(chatDAO *dao.ChatDAO) ChatController {
+func NewChatController(db *gorm.DB) ChatController {
 	return &chatController{
-		chatDAO: chatDAO,
+		chatDAO: dao.NewChatDAO(db),
 	}
+}
+
+func (s *chatController) SetContext(ctx *gin.Context) {
+	s.ctx = ctx
 }
 
 func (s *chatController) CreateConversation(input model.CreateConversationInput) (*model.Conversation, error) {

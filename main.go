@@ -37,6 +37,7 @@ func main() {
 
 	router := gin.Default()
 	router = routes.InitializeUserRoutes(router)
+	router = routes.InitializeChatRoutes(router)
 
 	// Swagger endpoint
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
