@@ -60,8 +60,8 @@ func (c *ChatRoutes) registerRoutes() {
 // @Tags chats
 // @Accept  json
 // @Produce  json
-// @Param chat body model.Chat true "Chat"
-// @Success 201 {object} model.Chat
+// @Param chat body model.CreateConversationInput true "Chat"
+// @Success 201 {object} model.Conversation
 // @Failure 400 {string} string
 // @Failure 500 {string} string
 // @Router /api/v1/chats/create [post]
@@ -89,7 +89,7 @@ func (c *ChatRoutes) createConversation(ctx *gin.Context) {
 // @Tags chats
 // @Accept  json
 // @Produce  json
-// @Param message body model.Message true "Message"
+// @Param message body model.SendMessageInput true "Message"
 // @Success 201 {object} model.Message
 // @Failure 400 {string} string
 // @Failure 500 {string} string
@@ -119,7 +119,7 @@ func (c *ChatRoutes) sendMessage(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Chat ID"
-// @Success 200 {object} model.Chat
+// @Success 200 {object} model.Message
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string

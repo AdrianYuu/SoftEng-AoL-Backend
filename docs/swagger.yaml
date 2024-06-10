@@ -1,9 +1,80 @@
 basePath: /api/v1
 definitions:
-  model.User:
+  model.Conversation:
     properties:
       id:
-        type: integer
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/model.User'
+        type: array
+      messages:
+        items:
+          $ref: '#/definitions/model.Message'
+        type: array
+      title:
+        type: string
+    type: object
+  model.CreateConversationInput:
+    properties:
+      memberIds:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+  model.Message:
+    properties:
+      content:
+        type: string
+      contentType:
+        $ref: '#/definitions/model.MessageContentType'
+      conversation:
+        $ref: '#/definitions/model.Conversation'
+      conversation_id:
+        type: string
+      id:
+        type: string
+      sender:
+        $ref: '#/definitions/model.User'
+      sender_id:
+        type: string
+    type: object
+  model.MessageContentType:
+    enum:
+    - TEXT
+    - IMAGE
+    type: string
+    x-enum-varnames:
+    - MessageContentTypeText
+    - MessageContentTypeImage
+  model.SendMessageInput:
+    properties:
+      content:
+        type: string
+      contentType:
+        $ref: '#/definitions/model.MessageContentType'
+      conversationId:
+        type: string
+      senderId:
+        type: string
+    type: object
+  model.User:
+    properties:
+      conversations:
+        description: associations
+        items:
+          $ref: '#/definitions/model.Conversation'
+        type: array
+      displayName:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      profilePicture:
+        type: string
       username:
         type: string
     type: object
@@ -21,11 +92,146 @@ info:
   title: Softeng Backend API
   version: "1.0"
 paths:
+  /api/v1/chats/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a chat by ID
+      parameters:
+      - description: Chat ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Message'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get a chat by ID
+      tags:
+      - chats
+  /api/v1/chats/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new chat with the input payload
+      parameters:
+      - description: Chat
+        in: body
+        name: chat
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateConversationInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Conversation'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a new chat
+      tags:
+      - chats
+  /api/v1/chats/message:
+    post:
+      consumes:
+      - application/json
+      description: Send a message with the input payload
+      parameters:
+      - description: Message
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/model.SendMessageInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Message'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Send a message
+      tags:
+      - chats
+  /api/v1/chats/ws/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Handle a websocket connection
+      parameters:
+      - description: Chat ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Handle a websocket connection
+      tags:
+      - chats
   /api/v1/users:
     get:
       consumes:
       - application/json
-      description: Get details of all users
+      description: Get a list of users by IDs
+      parameters:
+      - collectionFormat: csv
+        description: User IDs
+        in: query
+        items:
+          type: string
+        name: ids
+        required: true
+        type: array
       produces:
       - application/json
       responses:
@@ -35,11 +241,52 @@ paths:
             items:
               $ref: '#/definitions/model.User'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
             type: string
-      summary: Get all users
+      summary: Get a list of users by IDs
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update a user with the input payload
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update a user
       tags:
       - users
     post:
@@ -69,6 +316,39 @@ paths:
           schema:
             type: string
       summary: Create a new user
+      tags:
+      - users
+  /api/v1/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get a user by ID
       tags:
       - users
 swagger: "2.0"
