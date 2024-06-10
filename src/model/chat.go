@@ -17,6 +17,17 @@ type Message struct {
 	ContentType    MessageContentType `json:"contentType" gorm:"not null"`
 }
 
+type CreateConversationInput struct {
+	Title     string   `json:"title"`
+	MemberIds []string `json:"memberIds"`
+}
+type SendMessageInput struct {
+	SenderID       string             `json:"senderId"`
+	ConversationID string             `json:"conversationId"`
+	Content        string             `json:"content"`
+	ContentType    MessageContentType `json:"contentType"`
+}
+
 type MessageContentType string
 
 const (

@@ -9,9 +9,10 @@ import (
 
 type UserController interface {
 	SetContext(ctx *gin.Context)
-	GetUserByID(id uint) (model.User, error)
-	UpdateUser(user model.User) (model.User, error)
-	CreateUser(user model.User) (model.User, error)
+	GetUserByID(id string) (*model.User, error)
+	GetUsersByID(ids []string) ([]*model.User, error)
+	UpdateUser(user model.User) (*model.User, error)
+	CreateUser(user model.User) (*model.User, error)
 }
 
 type userController struct {
@@ -29,29 +30,38 @@ func (s *userController) SetContext(ctx *gin.Context) {
 	s.ctx = ctx
 }
 
-func (s *userController) GetUserByID(id uint) (model.User, error) {
+func (s *userController) GetUserByID(id string) (*model.User, error) {
 	user, err := s.userDAO.GetUserByID(id)
 	if err != nil {
-		return model.User{}, err
+		return nil, err
 	}
 
 	return user, nil
 }
 
-func (s *userController) CreateUser(user model.User) (model.User, error) {
+func (s *userController) GetUsersByID(ids []string) ([]*model.User, error) {
+	users, err := s.userDAO.GetUsersByID(ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (s *userController) CreateUser(user model.User) (*model.User, error) {
 	err := s.userDAO.CreateUser(&user)
 	if err != nil {
-		return model.User{}, err
+		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-func (s *userController) UpdateUser(user model.User) (model.User, error) {
+func (s *userController) UpdateUser(user model.User) (*model.User, error) {
 	err := s.userDAO.UpdateUser(&user)
 	if err != nil {
-		return model.User{}, err
+		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }

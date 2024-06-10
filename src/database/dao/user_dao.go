@@ -19,13 +19,24 @@ func (dao *UserDAO) CreateUser(user *model.User) error {
 	return dao.DB.Create(user).Error
 }
 
-func (dao *UserDAO) GetUserByID(id uint) (model.User, error) {
-	var user model.User
+func (dao *UserDAO) GetUserByID(id string) (*model.User, error) {
+	user := &model.User{}
 	err := dao.DB.First(&user, id).Error
 	if err != nil {
-		return model.User{}, err
+		return nil, err
 	}
+
 	return user, nil
+}
+
+func (dao *UserDAO) GetUsersByID(ids []string) ([]*model.User, error) {
+	var users []*model.User
+	err := dao.DB.Find(&users, ids).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func (dao *UserDAO) UpdateUser(user *model.User) error {
