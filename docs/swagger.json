@@ -18,7 +18,7 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
-        "/api/v1/chats/create": {
+        "/chats/create": {
             "post": {
                 "description": "Create a new chat with the input payload",
                 "consumes": [
@@ -64,7 +64,7 @@
                 }
             }
         },
-        "/api/v1/chats/message": {
+        "/chats/message": {
             "post": {
                 "description": "Send a message with the input payload",
                 "consumes": [
@@ -110,7 +110,7 @@
                 }
             }
         },
-        "/api/v1/chats/ws/{id}": {
+        "/chats/ws/{id}": {
             "get": {
                 "description": "Handle a websocket connection",
                 "consumes": [
@@ -160,7 +160,7 @@
                 }
             }
         },
-        "/api/v1/chats/{id}": {
+        "/chats/{id}": {
             "get": {
                 "description": "Get a chat by ID",
                 "consumes": [
@@ -210,7 +210,7 @@
                 }
             }
         },
-        "/api/v1/users": {
+        "/users": {
             "get": {
                 "description": "Get a list of users by IDs",
                 "consumes": [
@@ -285,7 +285,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/model.CreateUserInput"
                         }
                     }
                 ],
@@ -361,7 +361,7 @@
                 }
             }
         },
-        "/api/v1/users/{id}": {
+        "/users/{id}": {
             "get": {
                 "description": "Get a user by ID",
                 "consumes": [
@@ -446,6 +446,20 @@
                     }
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateUserInput": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

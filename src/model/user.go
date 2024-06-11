@@ -10,3 +10,9 @@ type User struct {
 	// associations
 	Conversations []*Conversation `json:"conversations" gorm:"many2many:user_conversations;"`
 }
+
+type CreateUserInput struct {
+	Email       string `json:"email"`
+	Username    string `json:"username"`
+	DisplayName string `json:"displayName"`
+}

@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/chats/create": {
+        "/chats/create": {
             "post": {
                 "description": "Create a new chat with the input payload",
                 "consumes": [
@@ -70,7 +70,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/chats/message": {
+        "/chats/message": {
             "post": {
                 "description": "Send a message with the input payload",
                 "consumes": [
@@ -116,7 +116,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/chats/ws/{id}": {
+        "/chats/ws/{id}": {
             "get": {
                 "description": "Handle a websocket connection",
                 "consumes": [
@@ -166,7 +166,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/chats/{id}": {
+        "/chats/{id}": {
             "get": {
                 "description": "Get a chat by ID",
                 "consumes": [
@@ -216,7 +216,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users": {
+        "/users": {
             "get": {
                 "description": "Get a list of users by IDs",
                 "consumes": [
@@ -291,7 +291,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/model.CreateUserInput"
                         }
                     }
                 ],
@@ -367,7 +367,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/{id}": {
+        "/users/{id}": {
             "get": {
                 "description": "Get a user by ID",
                 "consumes": [
@@ -452,6 +452,20 @@ const docTemplate = `{
                     }
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateUserInput": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

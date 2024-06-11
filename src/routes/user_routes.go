@@ -1,11 +1,13 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/badaccuracyid/softeng_backend/src/controllers"
 	"github.com/badaccuracyid/softeng_backend/src/database"
 	"github.com/badaccuracyid/softeng_backend/src/model"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/google/uuid"
 )
 
 type UserRoutes struct {
@@ -51,19 +53,27 @@ func (u *UserRoutes) registerRoutes() {
 // @Tags users
 // @Accept  json
 // @Produce  json
-// @Param user body model.User true "User"
+// @Param user body model.CreateUserInput true "User"
 // @Success 201 {object} model.User
 // @Failure 400 {string} string
 // @Failure 500 {string} string
-// @Router users [post]
+// @Router /users [post]
 func (u *UserRoutes) createUser(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
-	var user model.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
+	var userInput model.CreateUserInput
+	if err := ctx.ShouldBindJSON(&userInput); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	createdUser, err := u.userController.CreateUser(user)
+
+	newUser := model.User{
+		ID:          uuid.New().String(),
+		Email:       userInput.Email,
+		Username:    userInput.Username,
+		DisplayName: userInput.DisplayName,
+	}
+
+	createdUser, err := u.userController.CreateUser(newUser)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -82,7 +92,7 @@ func (u *UserRoutes) createUser(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router users/{id} [get]
+// @Router /users/{id} [get]
 func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	id := ctx.Param("id")
@@ -109,7 +119,7 @@ func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router users [get]
+// @Router /users [get]
 func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	ids := ctx.QueryArray("ids")
@@ -136,7 +146,7 @@ func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router users [patch]
+// @Router /users [patch]
 func (u *UserRoutes) updateUser(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	var user model.User

@@ -24,6 +24,15 @@ definitions:
       title:
         type: string
     type: object
+  model.CreateUserInput:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      username:
+        type: string
+    type: object
   model.Message:
     properties:
       content:
@@ -92,7 +101,7 @@ info:
   title: Softeng Backend API
   version: "1.0"
 paths:
-  /api/v1/chats/{id}:
+  /chats/{id}:
     get:
       consumes:
       - application/json
@@ -125,7 +134,7 @@ paths:
       summary: Get a chat by ID
       tags:
       - chats
-  /api/v1/chats/create:
+  /chats/create:
     post:
       consumes:
       - application/json
@@ -155,7 +164,7 @@ paths:
       summary: Create a new chat
       tags:
       - chats
-  /api/v1/chats/message:
+  /chats/message:
     post:
       consumes:
       - application/json
@@ -185,7 +194,7 @@ paths:
       summary: Send a message
       tags:
       - chats
-  /api/v1/chats/ws/{id}:
+  /chats/ws/{id}:
     get:
       consumes:
       - application/json
@@ -218,7 +227,7 @@ paths:
       summary: Handle a websocket connection
       tags:
       - chats
-  /api/v1/users:
+  /users:
     get:
       consumes:
       - application/json
@@ -299,7 +308,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.User'
+          $ref: '#/definitions/model.CreateUserInput'
       produces:
       - application/json
       responses:
@@ -318,7 +327,7 @@ paths:
       summary: Create a new user
       tags:
       - users
-  /api/v1/users/{id}:
+  /users/{id}:
     get:
       consumes:
       - application/json
