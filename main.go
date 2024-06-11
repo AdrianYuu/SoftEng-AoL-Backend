@@ -1,13 +1,15 @@
 package main
 
 import (
+	"os"
+
 	"github.com/badaccuracyid/softeng_backend/src/database"
 	"github.com/badaccuracyid/softeng_backend/src/routes"
 	"github.com/badaccuracyid/softeng_backend/src/utils"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"os"
 
 	_ "github.com/badaccuracyid/softeng_backend/docs"
 )
@@ -24,7 +26,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8080
+// @host localhost:8000
 // @BasePath /api/v1
 
 func main() {
@@ -36,6 +38,15 @@ func main() {
 	}
 
 	router := gin.Default()
+
+	// Add CORS middleware
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+
+	router.Use(cors.New(config))
+
 	router = routes.InitializeUserRoutes(router)
 	router = routes.InitializeChatRoutes(router)
 

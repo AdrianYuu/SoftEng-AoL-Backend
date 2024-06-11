@@ -47,7 +47,7 @@ func (u *UserRoutes) registerRoutes() {
 	u.baseRouter.GET("/get", u.getUsersByID)
 }
 
-// createUser handles the POST /api/v1/users request
+// createUser handles the POST /api/v1/users/create request
 // @Summary Create a new user
 // @Description Create a new user with the input payload
 // @Tags users
@@ -57,7 +57,7 @@ func (u *UserRoutes) registerRoutes() {
 // @Success 201 {object} model.User
 // @Failure 400 {string} string
 // @Failure 500 {string} string
-// @Router /users [post]
+// @Router /users/create [post]
 func (u *UserRoutes) createUser(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	var userInput model.CreateUserInput
@@ -81,7 +81,7 @@ func (u *UserRoutes) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, createdUser)
 }
 
-// getUserByID handles the GET /api/v1/users/:id request
+// getUserByID handles the GET /api/v1/users/get/:id request
 // @Summary Get a user by ID
 // @Description Get a user by ID
 // @Tags users
@@ -92,7 +92,7 @@ func (u *UserRoutes) createUser(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /users/{id} [get]
+// @Router /users/get/{id} [get]
 func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	id := ctx.Param("id")
@@ -108,7 +108,7 @@ func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-// getUsersByID handles the GET /api/v1/users request
+// getUsersByID handles the GET /api/v1/users/get request
 // @Summary Get a list of users by IDs
 // @Description Get a list of users by IDs
 // @Tags users
@@ -119,7 +119,7 @@ func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /users [get]
+// @Router /users/get [get]
 func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	ids := ctx.QueryArray("ids")
@@ -135,7 +135,7 @@ func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, users)
 }
 
-// updateUser handles the PATCH /api/v1/users request
+// updateUser handles the PATCH /api/v1/users/update request
 // @Summary Update a user
 // @Description Update a user with the input payload
 // @Tags users
@@ -146,7 +146,7 @@ func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /users [patch]
+// @Router /users/update [patch]
 func (u *UserRoutes) updateUser(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	var user model.User
