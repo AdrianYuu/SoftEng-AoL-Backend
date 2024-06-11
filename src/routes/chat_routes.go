@@ -50,6 +50,7 @@ func InitializeChatRoutes(router *gin.Engine) *gin.Engine {
 func (c *ChatRoutes) registerRoutes() {
 	c.baseRouter.POST("/create", c.createConversation)
 	c.baseRouter.POST("/message", c.sendMessage)
+	c.baseRouter.GET("/getForUser", c.getConversationForUser)
 	c.baseRouter.GET("/get/:id", c.getConversation)
 	c.baseRouter.GET("/ws/:id", c.handleWebSocket)
 }
@@ -139,6 +140,28 @@ func (c *ChatRoutes) getConversation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, conversation)
+}
+
+// getConversationForUser handles the GET /api/v1/chats/getForUser request
+// @Summary Get all chats for a user
+// @Description Get all chats for a user
+// @Tags chats
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} model.Conversation
+// @Failure 400 {string} string
+// @Failure 500 {string} string
+// @Router /chats/getForUser [get]
+func (c *ChatRoutes) getConversationForUser(ctx *gin.Context) {
+	c.chatController.SetContext(ctx)
+	userID := ctx.Query("userId")
+	conversations, err := c.chatController.GetConversationsForUser(userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, conversations)
 }
 
 // handleWebSocket handles the GET /api/v1/chats/ws/:id request
