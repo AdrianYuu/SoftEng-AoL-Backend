@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/badaccuracyid/softeng_backend/src/database/dao"
 	"github.com/badaccuracyid/softeng_backend/src/model"
 	"github.com/badaccuracyid/softeng_backend/src/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"sync"
 )
 
 type ChatController interface {

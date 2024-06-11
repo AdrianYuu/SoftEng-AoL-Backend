@@ -1,10 +1,18 @@
 package middleware
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// Do something here
-		c.Next()
+func UserMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userId := ctx.GetHeader("X-User-Id")
+		if userId == "" {
+			ctx.Next()
+			return
+		}
+
+		ctx.Set("userId", userId)
+		ctx.Next()
 	}
 }

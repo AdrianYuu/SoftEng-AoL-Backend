@@ -112,7 +112,7 @@ func (c *ChatRoutes) sendMessage(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, message)
 }
 
-// getConversation handles the GET /api/v1/chats/:id request
+// getConversation handles the GET /api/v1/chats/get/:id request
 // @Summary Get a chat by ID
 // @Description Get a chat by ID
 // @Tags chats

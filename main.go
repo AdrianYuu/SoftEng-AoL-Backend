@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/badaccuracyid/softeng_backend/src/database"
+	"github.com/badaccuracyid/softeng_backend/src/middleware"
 	"github.com/badaccuracyid/softeng_backend/src/routes"
 	"github.com/badaccuracyid/softeng_backend/src/utils"
 	"github.com/gin-contrib/cors"
@@ -46,6 +47,7 @@ func main() {
 	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
 
 	router.Use(cors.New(config))
+	router.Use(middleware.UserMiddleware())
 
 	router = routes.InitializeUserRoutes(router)
 	router = routes.InitializeChatRoutes(router)

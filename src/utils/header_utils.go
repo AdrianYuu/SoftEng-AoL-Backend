@@ -8,5 +8,9 @@ func GetCurrentUserID(ctx *gin.Context) string {
 	}
 
 	userId, _ := ctx.Get("userId")
+	if userId == nil {
+		return ""
+	}
+
 	return userId.(string)
 }
