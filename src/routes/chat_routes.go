@@ -119,11 +119,11 @@ func (c *ChatRoutes) sendMessage(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Chat ID"
-// @Success 200 {object} model.Message
+// @Success 200 {object} model.Conversation
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /chats/{id} [get]
+// @Router /chats/get/{id} [get]
 func (c *ChatRoutes) getConversation(ctx *gin.Context) {
 	c.chatController.SetContext(ctx)
 	id := ctx.Param("id")
