@@ -55,7 +55,7 @@ func (u *UserRoutes) registerRoutes() {
 // @Success 201 {object} model.User
 // @Failure 400 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/users [post]
+// @Router users [post]
 func (u *UserRoutes) createUser(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	var user model.User
@@ -82,7 +82,7 @@ func (u *UserRoutes) createUser(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/users/{id} [get]
+// @Router users/{id} [get]
 func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	id := ctx.Param("id")
@@ -109,7 +109,7 @@ func (u *UserRoutes) getUserByID(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/users [get]
+// @Router users [get]
 func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	ids := ctx.QueryArray("ids")
@@ -136,7 +136,7 @@ func (u *UserRoutes) getUsersByID(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/users [patch]
+// @Router users [patch]
 func (u *UserRoutes) updateUser(ctx *gin.Context) {
 	u.userController.SetContext(ctx)
 	var user model.User

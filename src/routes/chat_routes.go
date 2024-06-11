@@ -64,7 +64,7 @@ func (c *ChatRoutes) registerRoutes() {
 // @Success 201 {object} model.Conversation
 // @Failure 400 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/chats/create [post]
+// @Router chats/create [post]
 func (c *ChatRoutes) createConversation(ctx *gin.Context) {
 	c.chatController.SetContext(ctx)
 	payload := model.CreateConversationInput{}
@@ -93,7 +93,7 @@ func (c *ChatRoutes) createConversation(ctx *gin.Context) {
 // @Success 201 {object} model.Message
 // @Failure 400 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/chats/message [post]
+// @Router chats/message [post]
 func (c *ChatRoutes) sendMessage(ctx *gin.Context) {
 	c.chatController.SetContext(ctx)
 	payload := model.SendMessageInput{}
@@ -123,7 +123,7 @@ func (c *ChatRoutes) sendMessage(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/chats/{id} [get]
+// @Router chats/{id} [get]
 func (c *ChatRoutes) getConversation(ctx *gin.Context) {
 	c.chatController.SetContext(ctx)
 	id := ctx.Param("id")
@@ -152,7 +152,7 @@ func (c *ChatRoutes) getConversation(ctx *gin.Context) {
 // @Failure 400 {string} string
 // @Failure 404 {string} string
 // @Failure 500 {string} string
-// @Router /api/v1/chats/ws/{id} [get]
+// @Router chats/ws/{id} [get]
 func (c *ChatRoutes) handleWebSocket(ctx *gin.Context) {
 	conversationID := ctx.Param("id")
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
