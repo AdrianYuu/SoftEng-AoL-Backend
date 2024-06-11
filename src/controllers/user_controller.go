@@ -13,6 +13,7 @@ type UserController interface {
 	GetUsersByID(ids []string) ([]*model.User, error)
 	UpdateUser(user model.User) (*model.User, error)
 	CreateUser(user model.User) (*model.User, error)
+	Login(email string, password string) (*model.User, error)
 }
 
 type userController struct {
@@ -64,4 +65,17 @@ func (s *userController) UpdateUser(user model.User) (*model.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (s *userController) Login(email string, password string) (*model.User, error) {
+	user, err := s.userDAO.GetUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Password != password {
+		return nil, nil
+	}
+
+	return user, nil
 }

@@ -45,6 +45,8 @@ func (u *UserRoutes) registerRoutes() {
 
 	u.baseRouter.GET("/get/:id", u.getUserByID)
 	u.baseRouter.GET("/get", u.getUsersByID)
+
+	u.baseRouter.GET("/auth/login", u.login)
 }
 
 // createUser handles the POST /api/v1/users/create request
@@ -160,4 +162,33 @@ func (u *UserRoutes) updateUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
+}
+
+// login handles the GET /api/v1/users/auth/login request
+// @Summary Login a user
+// @Description Login a user with the input payload
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Param email query string true "Email"
+// @Param password query string true "Password"
+// @Success 200 {object} model.User
+// @Failure 400 {string} string
+// @Failure 404 {string} string
+// @Failure 500 {string} string
+// @Router /users/auth/login [get]
+func (u *UserRoutes) login(ctx *gin.Context) {
+	u.userController.SetContext(ctx)
+	email := ctx.Query("email")
+	password := ctx.Query("password")
+	user, err := u.userController.Login(email, password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	if user == nil {
+		ctx.JSON(http.StatusNotFound, "User not found")
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
 }

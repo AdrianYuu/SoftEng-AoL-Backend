@@ -29,6 +29,16 @@ func (dao *UserDAO) GetUserByID(id string) (*model.User, error) {
 	return user, nil
 }
 
+func (dao *UserDAO) GetUserByEmail(email string) (*model.User, error) {
+	user := &model.User{}
+	err := dao.DB.First(user, "email = ?", email).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (dao *UserDAO) GetUsersByID(ids []string) ([]*model.User, error) {
 	var users []*model.User
 	err := dao.DB.Find(&users, "id IN ?", ids).Error
