@@ -21,7 +21,7 @@ func (dao *ChatDAO) CreateConversation(conversation *model.Conversation) error {
 
 func (dao *ChatDAO) GetConversationByID(id string) (*model.Conversation, error) {
 	conversation := &model.Conversation{}
-	err := dao.DB.First(&conversation, id).Error
+	err := dao.DB.First(&conversation, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (dao *ChatDAO) UpdateConversation(conversation *model.Conversation) error {
 }
 
 func (dao *ChatDAO) DeleteConversation(id string) error {
-	return dao.DB.Delete(&model.Conversation{}, id).Error
+	return dao.DB.Delete(&model.Conversation{}, "id = ?", id).Error
 }
 
 func (dao *ChatDAO) CreateMessage(message *model.Message) error {

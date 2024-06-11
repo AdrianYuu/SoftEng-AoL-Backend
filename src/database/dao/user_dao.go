@@ -21,7 +21,7 @@ func (dao *UserDAO) CreateUser(user *model.User) error {
 
 func (dao *UserDAO) GetUserByID(id string) (*model.User, error) {
 	user := &model.User{}
-	err := dao.DB.First(&user, id).Error
+	err := dao.DB.First(user, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (dao *UserDAO) GetUserByID(id string) (*model.User, error) {
 
 func (dao *UserDAO) GetUsersByID(ids []string) ([]*model.User, error) {
 	var users []*model.User
-	err := dao.DB.Find(&users, ids).Error
+	err := dao.DB.Find(&users, "id IN ?", ids).Error
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +43,6 @@ func (dao *UserDAO) UpdateUser(user *model.User) error {
 	return dao.DB.Save(user).Error
 }
 
-func (dao *UserDAO) DeleteUser(id uint) error {
-	return dao.DB.Delete(&model.User{}, id).Error
+func (dao *UserDAO) DeleteUser(id string) error {
+	return dao.DB.Delete(&model.User{}, "id = ?", id).Error
 }
