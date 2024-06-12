@@ -82,6 +82,8 @@ definitions:
         type: string
       id:
         type: string
+      password:
+        type: string
       profilePicture:
         type: string
       username:
@@ -164,6 +166,31 @@ paths:
       summary: Get a chat by ID
       tags:
       - chats
+  /chats/getForUser:
+    get:
+      consumes:
+      - application/json
+      description: Get all chats for a user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Conversation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all chats for a user
+      tags:
+      - chats
   /chats/message:
     post:
       consumes:
@@ -227,6 +254,44 @@ paths:
       summary: Handle a websocket connection
       tags:
       - chats
+  /users/auth/login:
+    get:
+      consumes:
+      - application/json
+      description: Login a user with the input payload
+      parameters:
+      - description: Email
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Login a user
+      tags:
+      - users
   /users/create:
     post:
       consumes:

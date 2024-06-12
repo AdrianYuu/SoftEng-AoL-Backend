@@ -38,6 +38,16 @@ func MigrateTables() error {
 		return err
 	}
 
+	err = db.AutoMigrate(&model.Message{})
+	if err != nil {
+		return err
+	}
+
+	err = db.AutoMigrate(&model.Conversation{})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
