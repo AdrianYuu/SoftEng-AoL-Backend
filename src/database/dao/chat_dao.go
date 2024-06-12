@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"fmt"
+
 	"github.com/badaccuracyid/softeng_backend/src/model"
 	"gorm.io/gorm"
 )
@@ -30,10 +32,18 @@ func (dao *ChatDAO) GetConversationByID(id string) (*model.Conversation, error) 
 
 func (dao *ChatDAO) GetConversationsForUser(userID string) ([]*model.Conversation, error) {
 	conversations := []*model.Conversation{}
-	err := dao.DB.Preload("Members").Preload("Messages.Sender").Joins("Members").Where("user_id = ?", userID).Find(&conversations).Error
+	err := dao.DB.
+		Joins("JOIN user_conversations ON user_conversations.conversation_id = conversations.id").
+		Joins("JOIN users ON users.id = user_conversations.user_id").
+		Preload("Members").
+		Preload("Messages.Sender").
+		Where("users.id = ?", userID).
+		Find(&conversations).Error
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(conversations, userID)
 
 	return conversations, nil
 }
@@ -47,6 +57,15 @@ func (dao *ChatDAO) DeleteConversation(id string) error {
 }
 
 func (dao *ChatDAO) CreateMessage(message *model.Message) error {
-	return dao.DB.Create(message).Error
+	// Create the message
+	if err := dao.DB.Create(message).Error; err != nil {
+		return err
+	}
 
+	// Preload the Sender (User)
+	if err := dao.DB.Preload("Sender").First(message, "id = ?", message.ID).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

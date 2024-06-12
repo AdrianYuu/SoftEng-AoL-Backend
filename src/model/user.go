@@ -6,7 +6,7 @@ type User struct {
 	Password       string  `json:"password" gorm:"not null"`
 	Username       string  `json:"username"`
 	DisplayName    string  `json:"displayName"`
-	ProfilePicture *string `gorm:"foreignKey:OwnerID"`
+	ProfilePicture *string `json:"profilePicture"`
 
 	// associations
 	Conversations []*Conversation `json:"conversations" gorm:"many2many:user_conversations;"`

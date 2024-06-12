@@ -17,7 +17,7 @@ type ChatController interface {
 
 	CreateConversation(input model.CreateConversationInput) (*model.Conversation, error)
 	GetConversation(id string) (*model.Conversation, error)
-	GetConversationsForUser(userID string) ([]*model.Conversation, error)
+	GetConversationsForUser() ([]*model.Conversation, error)
 	DeleteConversation(id string) error
 
 	SendMessage(input model.SendMessageInput) (*model.Message, error)
@@ -84,8 +84,9 @@ func (s *chatController) GetConversation(id string) (*model.Conversation, error)
 	return s.chatDAO.GetConversationByID(id)
 }
 
-func (s *chatController) GetConversationsForUser(userID string) ([]*model.Conversation, error) {
-	return s.chatDAO.GetConversationsForUser(userID)
+func (s *chatController) GetConversationsForUser() ([]*model.Conversation, error) {
+	userId := utils.GetCurrentUserID(s.ctx)
+	return s.chatDAO.GetConversationsForUser(userId)
 }
 
 func (s *chatController) DeleteConversation(id string) error {

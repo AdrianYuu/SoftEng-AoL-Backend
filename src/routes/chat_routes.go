@@ -1,12 +1,13 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/badaccuracyid/softeng_backend/src/controllers"
 	"github.com/badaccuracyid/softeng_backend/src/database"
 	"github.com/badaccuracyid/softeng_backend/src/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"net/http"
 )
 
 type ChatRoutes struct {
@@ -154,8 +155,7 @@ func (c *ChatRoutes) getConversation(ctx *gin.Context) {
 // @Router /chats/getForUser [get]
 func (c *ChatRoutes) getConversationForUser(ctx *gin.Context) {
 	c.chatController.SetContext(ctx)
-	userID := ctx.Query("userId")
-	conversations, err := c.chatController.GetConversationsForUser(userID)
+	conversations, err := c.chatController.GetConversationsForUser()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return

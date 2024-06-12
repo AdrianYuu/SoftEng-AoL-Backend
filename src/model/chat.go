@@ -10,7 +10,7 @@ type Conversation struct {
 type Message struct {
 	ID             string             `json:"id" gorm:"primaryKey"`
 	SenderID       string             `json:"sender_id" gorm:"not null"`
-	Sender         User               `json:"sender" gorm:"not null;foreignKey:SenderID"`
+	Sender         User               `json:"sender" gorm:"foreignKey:SenderID"`
 	ConversationID string             `json:"conversation_id" gorm:"not null"`
 	Conversation   Conversation       `json:"conversation" gorm:"foreignKey:ConversationID"`
 	Content        string             `json:"content"`
