@@ -73,6 +73,7 @@ func (u *UserRoutes) createUser(ctx *gin.Context) {
 		Email:       userInput.Email,
 		Username:    userInput.Username,
 		DisplayName: userInput.DisplayName,
+		Password:    userInput.Password,
 	}
 
 	createdUser, err := u.userController.CreateUser(newUser)

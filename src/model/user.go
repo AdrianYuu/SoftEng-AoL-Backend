@@ -16,4 +16,5 @@ type CreateUserInput struct {
 	Email       string `json:"email"`
 	Username    string `json:"username"`
 	DisplayName string `json:"displayName"`
+	Password    string `json:"password"`
 }
